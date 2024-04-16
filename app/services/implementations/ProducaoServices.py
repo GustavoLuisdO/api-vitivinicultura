@@ -1,5 +1,7 @@
 from itertools import groupby
 
+from httpx import HTTPStatusError
+
 from app.models.Categoria import Categoria
 from app.models.Produto import Produto
 from app.services.interfaces.IProducaoServices import IProducaoServices
@@ -54,7 +56,7 @@ class ProducaoServices(IProducaoServices):
 
                 return json.loads(json_str)
         except httpx.HTTPStatusError as e:
-            raise Exception(f"Erro ao obter produção no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter produção no ano {ano}: {e}")
         except Exception as e:
             raise Exception(f"Erro ao obter produção: {e}")
 
