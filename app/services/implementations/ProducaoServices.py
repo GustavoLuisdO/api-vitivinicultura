@@ -23,7 +23,7 @@ class ProducaoServices(IProducaoServices):
                 tabela = soup.find('table', attrs={'class': 'tb_dados'})
 
                 # extrair as linhas da tabela
-                linhas = tabela.find_all('tr')[1:]  # pula a linha de cabeçalho
+                linhas = tabela.find_all('tr')[1:-1]  # pula a linha de cabeçalho e ignora a última linha
 
                 # dicionário para manter o rastreamento dos produtos por categoria
                 produtos_por_categoria = {}
