@@ -1,3 +1,7 @@
+from itertools import groupby
+
+from app.models.Categoria import Categoria
+from app.models.Produto import Produto
 from app.services.interfaces.IProducaoServices import IProducaoServices
 from app.models.Producao import Producao
 from bs4 import BeautifulSoup
@@ -23,22 +27,42 @@ class ProducaoServices(IProducaoServices):
 
                 # extrair os dados
                 dados = []
+
+                produtos = []
                 for linha in linhas:
-                    celulas = linha.find_all('td')
+                    # verificar se a linha atual é uma categoria
+                    is_categoria = 'tb_item' in linha.find('td').get('class', [])
 
-                    dados_linha = []
-                    cont = 0
-                    for celula in celulas:
-                        dados_linha.append(celula.text.replace("\n", "").strip())
-                        cont = cont + 1
+                    if not is_categoria:
+                        nome_categoria = linha.find_previous('td', attrs={'class': 'tb_item'}).parent()[0].text.replace("\n", "").strip()
+                        nome_produto = linha.find_all('td')[0].text.replace("\n", "").strip()
+                        qtde_litros = linha.find_all('td')[1].text.replace("\n", "").strip()
 
-                    dados.append(Producao(dados_linha[0], dados_linha[1]).__json__())
+                        produtos.append(Produto(nome_produto, qtde_litros, nome_categoria))
 
-                # Converter os dados para JSON
-                json_str = json.dumps(dados, indent=4, ensure_ascii=False)
+                # adicionar as categorias em uma lista
+                categorias = []
+                for nome_categoria, produtos_categoria in groupby(produtos, key=obter_categoria_por_produto):
+                    categoria = Categoria(nome_categoria, [])
+                    for produto in list(produtos_categoria):
+                        categoria.produtos.append(produto)
+
+                    categorias.append(categoria)
+
+                # instanciar o objeto de produção
+                producao = Producao(categorias)
+
+                print(producao.__json__())
+
+                # converter os dados para JSON
+                json_str = json.dumps(producao.__json__(), indent=4, ensure_ascii=False)
 
                 return json.loads(json_str)
         except httpx.HTTPStatusError as e:
             raise Exception(f"Erro ao obter produção no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter produção no ano {ano}: {e}")
+            raise Exception(f"Erro ao obter produção: {e}")
+
+
+def obter_categoria_por_produto(produto):
+    return produto.nome_categoria

@@ -1,10 +1,23 @@
+from app.models.Categoria import Categoria
+
+
 class Producao:
-    def __init__(self, produto: str, quantidade_litros: str):
-        self.produto = produto
-        self.quantidade_litros = quantidade_litros
+    def __init__(self, categorias: list[Categoria]):
+        self.categorias = categorias
+
 
     def __json__(self):
-        return {
-            "produto": self.produto,
-            "quantidade_litros": self.quantidade_litros
-        }
+        dados = {}
+        for categoria in self.categorias:
+            # lista vazia para armazenar os produtos da categoria atual
+            produtos = []
+
+            for produto in categoria.produtos:
+                # criar um dicionário com o nome e a quantidade de litros do produto atual e o adiciona à lista de produtos
+                produtos.append({'Produto': produto.nome, 'Quantidade (litros)': produto.quantidade_litros})
+
+            # associar a lista de produtos à categoria atual no dicionário de dados
+            dados[categoria.nome] = produtos
+
+        return dados
+
