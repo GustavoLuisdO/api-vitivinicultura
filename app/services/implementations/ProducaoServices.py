@@ -11,7 +11,7 @@ import json
 class ProducaoServices(IProducaoServices):
     async def obter_producao(self, ano: int):
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=120) as client:
                 response = await client.get(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_02")
                 response.raise_for_status()
 
@@ -23,36 +23,31 @@ class ProducaoServices(IProducaoServices):
                 tabela = soup.find('table', attrs={'class': 'tb_dados'})
 
                 # extrair as linhas da tabela
-                linhas = tabela.find_all('tr')[1:]  # Pula a linha de cabeçalho
+                linhas = tabela.find_all('tr')[1:]  # pula a linha de cabeçalho
 
-                # extrair os dados
-                dados = []
+                # dicionário para manter o rastreamento dos produtos por categoria
+                produtos_por_categoria = {}
 
-                produtos = []
                 for linha in linhas:
                     # verificar se a linha atual é uma categoria
                     is_categoria = 'tb_item' in linha.find('td').get('class', [])
 
                     if not is_categoria:
-                        nome_categoria = linha.find_previous('td', attrs={'class': 'tb_item'}).parent()[0].text.replace("\n", "").strip()
-                        nome_produto = linha.find_all('td')[0].text.replace("\n", "").strip()
-                        qtde_litros = linha.find_all('td')[1].text.replace("\n", "").strip()
+                        nome_categoria = linha.find_previous('td', class_='tb_item').parent()[0].get_text(strip=True)
+                        nome_produto = linha.find_all('td')[0].get_text(strip=True)
+                        qtde_litros = linha.find_all('td')[1].get_text(strip=True)
 
-                        produtos.append(Produto(nome_produto, qtde_litros, nome_categoria))
+                        # adicionar produto ao dicionário de produtos por categoria
+                        if nome_categoria not in produtos_por_categoria:
+                            produtos_por_categoria[nome_categoria] = []
 
-                # adicionar as categorias em uma lista
-                categorias = []
-                for nome_categoria, produtos_categoria in groupby(produtos, key=obter_categoria_por_produto):
-                    categoria = Categoria(nome_categoria, [])
-                    for produto in list(produtos_categoria):
-                        categoria.produtos.append(produto)
+                        produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_litros, nome_categoria))
 
-                    categorias.append(categoria)
+                # criar objetos de Categoria com base no dicionário de produtos por categoria
+                categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in produtos_por_categoria.items()]
 
                 # instanciar o objeto de produção
                 producao = Producao(categorias)
-
-                print(producao.__json__())
 
                 # converter os dados para JSON
                 json_str = json.dumps(producao.__json__(), indent=4, ensure_ascii=False)
