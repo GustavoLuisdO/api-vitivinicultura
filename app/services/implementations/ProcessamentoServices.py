@@ -1,20 +1,19 @@
-from itertools import groupby
-
-from httpx import HTTPStatusError
+from bs4 import BeautifulSoup
 
 from app.models.Categoria import Categoria
+from app.models.Processamento import Processamento
 from app.models.Produto import Produto
-from app.services.interfaces.IProducaoServices import IProducaoServices
-from app.models.Producao import Producao
-from bs4 import BeautifulSoup
+from app.services.interfaces.IProcessamentoServices import IProcessamentoServices
+
+from httpx import HTTPStatusError
 import httpx
 import json
 
-class ProducaoServices(IProducaoServices):
-    async def obter_producao(self, ano: int):
+class ProcessamentoServices(IProcessamentoServices):
+    async def obter_processamento_viniferas(self, ano: int):
         try:
             async with httpx.AsyncClient(timeout=120) as client:
-                response = await client.get(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_02")
+                response = await client.get(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_01")
                 response.raise_for_status()
 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -36,29 +35,26 @@ class ProducaoServices(IProducaoServices):
                     if not is_categoria:
                         nome_categoria = linha.find_previous('td', class_='tb_item').parent()[0].get_text(strip=True)
                         nome_produto = linha.find_all('td')[0].get_text(strip=True)
-                        qtde_litros = linha.find_all('td')[1].get_text(strip=True)
+                        qtde_kg = linha.find_all('td')[1].get_text(strip=True)
 
                         # adicionar produto ao dicionário de produtos por categoria
                         if nome_categoria not in produtos_por_categoria:
                             produtos_por_categoria[nome_categoria] = []
 
-                        produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_litros, nome_categoria))
+                        produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_kg, nome_categoria))
+
 
                 # criar objetos de Categoria com base no dicionário de produtos por categoria
                 categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in produtos_por_categoria.items()]
 
-                # instanciar o objeto de produção
-                producao = Producao(categorias)
+                # instanciar o objeto de processamento
+                processamento = Processamento(categorias)
 
                 # converter os dados para JSON
-                json_str = json.dumps(producao.__json__(), indent=4, ensure_ascii=False)
+                json_str = json.dumps(processamento.__json__(), indent=4, ensure_ascii=False)
 
                 return json.loads(json_str)
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter produção no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter produção: {e}")
-
-
-def obter_categoria_por_produto(produto):
-    return produto.nome_categoria
+            raise Exception(f"Erro ao obter processamento de viníferas: {e}")

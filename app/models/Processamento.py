@@ -1,7 +1,6 @@
 from app.models.Categoria import Categoria
 
-
-class Producao:
+class Processamento:
     def __init__(self, categorias: list[Categoria]):
         self.categorias = categorias
 
@@ -14,7 +13,7 @@ class Producao:
 
             for produto in categoria.produtos:
                 # criar um dicionário com o nome e a quantidade de litros do produto atual e o adiciona à lista de produtos
-                produtos.append({'Produto': produto.nome, 'Quantidade (litros)': produto.quantidade})
+                produtos.append({'Cultivar': produto.nome, 'Quantidade (kg)': produto.quantidade})
 
             # associar a lista de produtos à categoria atual no dicionário de dados
             dados[categoria.nome] = produtos
