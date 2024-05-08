@@ -17,6 +17,7 @@ class ProducaoServices(IProducaoServices):
                 response = await client.get(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_02")
                 response.raise_for_status()
 
+                # processar o html
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 # encontrar a tabela

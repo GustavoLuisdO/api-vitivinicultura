@@ -10,12 +10,14 @@ import httpx
 import json
 
 class ProcessamentoServices(IProcessamentoServices):
-    async def obter_processamento_viniferas(self, ano: int):
+
+    async def extrair_dados(self, url):
         try:
             async with httpx.AsyncClient(timeout=120) as client:
-                response = await client.get(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_01")
+                response = await client.get(url)
                 response.raise_for_status()
 
+                # processar o html
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 # encontrar a tabela
@@ -43,9 +45,9 @@ class ProcessamentoServices(IProcessamentoServices):
 
                         produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_kg, nome_categoria))
 
-
                 # criar objetos de Categoria com base no dicionário de produtos por categoria
-                categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in produtos_por_categoria.items()]
+                categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in
+                              produtos_por_categoria.items()]
 
                 # instanciar o objeto de processamento
                 processamento = Processamento(categorias)
@@ -55,6 +57,43 @@ class ProcessamentoServices(IProcessamentoServices):
 
                 return json.loads(json_str)
         except httpx.HTTPStatusError as e:
+            raise HTTPStatusError(f"Erro ao obter processamento: {e}")
+        except Exception as e:
+            raise Exception(f"Erro ao obter processamento: {e}")
+
+
+    async def obter_processamento_viniferas(self, ano: int):
+        try:
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_01");
+        except httpx.HTTPStatusError as e:
             raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
         except Exception as e:
             raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+
+
+    async def obter_processamento_americanas_e_hibridas(self, ano: int):
+        try:
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_02")
+        except httpx.HTTPStatusError as e:
+            raise HTTPStatusError(f"Erro ao obter processamento de americanas e hibridas no ano {ano}: {e}")
+        except Exception as e:
+            raise Exception(f"Erro ao obter processamento de americanas e hibridas: {e}")
+
+
+    async def obter_processamento_uva_de_mesa(self, ano: int):
+        try:
+            return await self.extrair_dados(
+                f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_03")
+        except httpx.HTTPStatusError as e:
+            raise HTTPStatusError(f"Erro ao obter processamento de uva de mesa no ano {ano}: {e}")
+        except Exception as e:
+            raise Exception(f"Erro ao obter processamento de uva de mesa: {e}")
+
+    async def obter_processamento_sem_classificacao(self, ano: int):
+        try:
+            return await self.extrair_dados(
+                f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_03&subopcao=subopt_04")
+        except httpx.HTTPStatusError as e:
+            raise HTTPStatusError(f"Erro ao obter processamento sem classificação no ano {ano}: {e}")
+        except Exception as e:
+            raise Exception(f"Erro ao obter processamento sem classificação: {e}")
