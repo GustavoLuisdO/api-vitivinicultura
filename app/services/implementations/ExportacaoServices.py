@@ -1,13 +1,15 @@
+import json
+
+import httpx
 from bs4 import BeautifulSoup
 from httpx import HTTPStatusError
 
 from app.models.Categoria import Categoria
-from app.models.Importacao import Importacao
+from app.models.Exportacao import Exportacao
 from app.models.Produto import Produto
-from app.services.interfaces.IImportacaoServices import IImportacaoServices
-import json
-import httpx
-class ImportacaoServices(IImportacaoServices):
+from app.services.interfaces.IExportacaoServices import IExportacaoServices
+
+class ExportacaoServices(IExportacaoServices):
 
     async def extrair_dados(self, url):
         try:
@@ -48,56 +50,48 @@ class ImportacaoServices(IImportacaoServices):
                 categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in
                               produtos_por_categoria.items()]
 
-                # instanciar o objeto de importacao
-                importacao = Importacao(categorias)
+                # instanciar o objeto de exportacao
+                exportacao = Exportacao(categorias)
 
                 # converter os dados para JSON
-                json_str = json.dumps(importacao.__json__(), indent=4, ensure_ascii=False)
+                json_str = json.dumps(exportacao.__json__(), indent=4, ensure_ascii=False)
 
                 return json.loads(json_str)
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importacao: {e}")
+            raise HTTPStatusError(f"Erro ao obter exportação: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter importacao: {e}")
+            raise Exception(f"Erro ao obter exportação: {e}")
 
-    async def obter_importacao_vinho_de_mesa(self, ano: int):
+
+
+    async def obter_exportacao_vinho_de_mesa(self, ano: int):
         try:
-            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_01");
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_06&subopcao=subopt_01");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importação de vinhos de mesa no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter exportação de vinhos de mesa no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter importação de vinhos de mesa: {e}")
+            raise Exception(f"Erro ao obter exportação de vinhos de mesa: {e}")
 
-    async def obter_importacao_espumantes(self, ano: int):
+    async def obter_exportacao_espumantes(self, ano: int):
         try:
-            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_02");
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_06&subopcao=subopt_02");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importação de espumantes no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter exportação de vinhos de mesa no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter importação de espumantes: {e}")
+            raise Exception(f"Erro ao obter exportação de vinhos de mesa: {e}")
 
-
-    async def obter_importacao_uvas_frescas(self, ano: int):
+    async def obter_exportacao_uvas_frescas(self, ano: int):
         try:
-            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_03");
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_06&subopcao=subopt_03");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importação de uvas frescas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter exportação de vinhos de mesa no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter importação de uvas frescas: {e}")
+            raise Exception(f"Erro ao obter exportação de vinhos de mesa: {e}")
 
-    async def obter_importacao_uvas_passas(self, ano: int):
+    async def obter_exportacao_suco_de_uva(self, ano: int):
         try:
-            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_04");
+            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_06&subopcao=subopt_04");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importação de uvas passas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter exportação de vinhos de mesa no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter importação de uvas passas: {e}")
-
-    async def obter_importacao_suco_de_uva(self, ano: int):
-        try:
-            return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_05");
-        except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter importação de suco uva {ano}: {e}")
-        except Exception as e:
-            raise Exception(f"Erro ao obter importação de suco uva: {e}")
-
+            raise Exception(f"Erro ao obter exportação de vinhos de mesa: {e}")
