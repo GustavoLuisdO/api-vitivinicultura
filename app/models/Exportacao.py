@@ -2,8 +2,8 @@ from app.models.Categoria import Categoria
 
 class Exportacao():
 
-    def __init__(self, exportacao: list[Categoria]):
-        self.exportacao = exportacao
+    def __init__(self, categorias: list[Categoria]):
+        self.categorias = categorias
 
 
     def __json__(self):

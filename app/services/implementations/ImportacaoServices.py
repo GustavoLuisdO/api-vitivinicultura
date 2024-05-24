@@ -38,6 +38,7 @@ class ImportacaoServices(IImportacaoServices):
                         qtde_kg = linha.find_all('td')[1].get_text(strip=True)
                         valor_us = linha.find_all('td')[2].get_text(strip=True)
 
+
                         # adicionar produto ao dicionário de produtos por categoria
                         if nome_categoria not in produtos_por_categoria:
                             produtos_por_categoria[nome_categoria] = []

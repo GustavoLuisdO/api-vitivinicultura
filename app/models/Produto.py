@@ -5,3 +5,5 @@ class Produto:
         self.valor = valor
         self.nome_categoria = nome_categoria
 
+
+

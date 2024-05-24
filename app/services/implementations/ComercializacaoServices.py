@@ -42,7 +42,7 @@ class ComercializacaoServices(IComercializacaoServices):
                         if nome_categoria not in produtos_por_categoria:
                             produtos_por_categoria[nome_categoria] = []
 
-                        produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_litros, nome_categoria))
+                        produtos_por_categoria[nome_categoria].append(Produto(nome_produto, qtde_litros,"",nome_categoria))
 
                 # criar objetos de Categoria com base no dicionário de produtos por categoria
                 categorias = [Categoria(nome_categoria, produtos) for nome_categoria, produtos in produtos_por_categoria.items()]
