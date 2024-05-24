@@ -64,40 +64,40 @@ class ImportacaoServices(IImportacaoServices):
         try:
             return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_01");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter importação de vinhos de mesa no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+            raise Exception(f"Erro ao obter importação de vinhos de mesa: {e}")
 
     async def obter_importacao_espumantes(self, ano: int):
         try:
             return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_02");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter importação de espumantes no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+            raise Exception(f"Erro ao obter importação de espumantes: {e}")
 
 
     async def obter_importacao_uvas_frescas(self, ano: int):
         try:
             return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_03");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter importação de uvas frescas no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+            raise Exception(f"Erro ao obter importação de uvas frescas: {e}")
 
     async def obter_importacao_uvas_passas(self, ano: int):
         try:
             return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_04");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter importação de uvas passas no ano {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+            raise Exception(f"Erro ao obter importação de uvas passas: {e}")
 
     async def obter_importacao_suco_de_uva(self, ano: int):
         try:
             return await self.extrair_dados(f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_05&subopcao=subopt_05");
         except httpx.HTTPStatusError as e:
-            raise HTTPStatusError(f"Erro ao obter processamento de viníferas no ano {ano}: {e}")
+            raise HTTPStatusError(f"Erro ao obter importação de suco uva {ano}: {e}")
         except Exception as e:
-            raise Exception(f"Erro ao obter processamento de viníferas: {e}")
+            raise Exception(f"Erro ao obter importação de suco uva: {e}")
 
