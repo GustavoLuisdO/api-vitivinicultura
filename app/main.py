@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from app.api.v1.ProducaoController import router as producao_controller
 from app.api.v1.ProcessamentoController import router as processamento_controller
@@ -13,3 +14,8 @@ app.include_router(processamento_controller, prefix="/v1")
 app.include_router(comercializacao_controller, prefix="/v1")
 app.include_router(importacao_controller, prefix="/v1")
 app.include_router(exportacao_controller, prefix="/v1")
+
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000)
