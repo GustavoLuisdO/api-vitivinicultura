@@ -5,7 +5,7 @@ FROM python:3.9
 WORKDIR /app
 
 # Copiando a api para o container
-COPY api-vitivinicultura/ .
+COPY . .
 
 # Dependencias
 RUN pip install --no-cache-dir -r requirements.txt
